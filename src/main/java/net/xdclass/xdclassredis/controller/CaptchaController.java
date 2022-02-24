@@ -2,10 +2,12 @@ package net.xdclass.xdclassredis.controller;
 
 import com.google.code.kaptcha.Producer;
 import net.xdclass.xdclassredis.util.CommonUtil;
+import net.xdclass.xdclassredis.util.JsonData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
@@ -50,6 +52,28 @@ public class CaptchaController {
             outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
+        }
+
+    }
+
+    /**
+     * 支持手机号、邮箱发送验证码
+     * @return
+     */
+    @GetMapping("send_code")
+    public JsonData sendRegisterCode(@RequestParam(value = "to", required = true)String to,
+                                     @RequestParam(value = "captcha", required = true)String  captcha,
+                                     HttpServletRequest request){
+
+        String key = getCaptchaKey(request);
+        String cacheCaptcha = redisTemplate.opsForValue().get(key);
+
+        if(captcha!=null && cacheCaptcha!=null && cacheCaptcha.equalsIgnoreCase(captcha)) {
+            redisTemplate.delete(key);
+            //TODO 发送验证码
+            return JsonData.buildSuccess();
+        }else {
+            return JsonData.buildError("验证码错误");
         }
 
     }
