@@ -2,10 +2,14 @@ server:
   port: 8081
 
 spring:
+  cache:
+    type: redis
+
   redis:
     host: 127.0.0.1
     port: 6379
     password:
+
 
     client-type: lettuce
 
@@ -19,4 +23,23 @@ spring:
         min-idle: 0
         #
         max-wait: -1ms
+
+
+    #redis哨兵
+    sentinel:
+      master: mymaster
+      nodes: 8.129.113.233:26379,8.129.113.233:26380,8.129.113.233:26381
+      #==============================数据库相关配置========================================
+      #数据库配置
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/xdclass_redis?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: epsoft123
+
+  #配置plus打印sql日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
